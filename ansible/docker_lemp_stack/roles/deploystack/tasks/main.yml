@@ -1,0 +1,105 @@
+---
+# tasks file for deploying all containers and setting up the network
+
+# Set up directories and copy files
+
+- name: make php image directory
+  file:
+    path: /phpbuild
+    state: directory
+    mode: ' 0755'
+
+- name: copy files
+  copy:
+    src: ./copyfiles/
+    dest: /
+    force: yes
+    mode: '0755'
+
+- name: copy Dockerfile
+  copy:
+    src: /Dockerfile
+    remote_src: yes
+    dest: /phpbuild/
+    force: yes
+    mode: ' 0755' 
+
+- name: make database directory
+  file:
+    path: /mysqldata
+    state: directory
+    mode: '0755'
+
+- name: setup network
+  docker_network:
+    name: network_one
+
+# First we need to build the php image from Dockerfile
+
+- name: build php image
+  docker_image:
+    name: mischa:1.0
+    build:
+      path: /phpbuild
+    state: present
+
+# Start the containers
+
+- name: start mysql container
+  docker_container:
+    name: mysql
+    image: mysql/mysql-server:8.0
+    detach: yes
+    networks:
+    - name: network_one
+    env:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: "%"
+      MYSQL_DATABASE: demo
+    volumes: 
+    - /.docker/mysql/my.cnf:/etc/mysql/conf.d/my.cnf
+    - /mysqldata:/var/lib/mysql
+
+
+- name: start php container
+  docker_container:
+    name: php
+    image: mischa:1.0
+    detach: yes
+    networks:
+      - name: network_one
+    working_dir: /var/www/php
+    volumes:
+      - /src:/var/www/php
+
+- name: start phpmyadmin container
+  docker_container:
+    name: phpmyadmin
+    image: phpmyadmin/phpmyadmin:5 
+    ports:
+      - 8080:80
+    env:
+      PMA_HOST: mysql
+    networks:
+      - name: network_one
+    detach: yes
+
+- name: start nginx 
+  docker_container:
+    name: nginx
+    image: nginx:1.19
+    detach: yes
+    ports:
+      - 80:80
+    networks:
+      - name: network_one
+    volumes:
+      - /src:/var/www/php
+      - /.docker/nginx/conf.d:/etc/nginx/conf.d
+
+- name: print docker ps
+  shell: docker ps
+  register: ps
+
+- debug: var=ps.stdout_lines
+

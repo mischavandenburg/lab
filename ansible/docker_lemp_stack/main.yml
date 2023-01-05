@@ -1,0 +1,9 @@
+---
+
+- name: call roles
+  hosts: all
+  become: true
+
+  roles: 
+    - docker_installer
+    - deploystack

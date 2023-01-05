@@ -1,0 +1,42 @@
+---
+# tasks file for docker_installer
+
+- name: Install yum utils
+  yum:
+    name: 
+      - yum-utils
+    state: latest
+
+- name: creating a docker repository
+  yum_repository:
+    description: repo for docker
+    name: docker-ce
+    baseurl: https://download.docker.com/linux/centos/8/x86_64/stable/
+    gpgkey: https://download.docker.com/linux/centos/gpg
+    gpgcheck: yes
+
+- name: install docker-ce
+  yum:
+    name:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+    state: present
+
+- name: get docker version
+  shell: "docker -v"
+  register: version
+
+- debug: var=version.stdout
+
+- name: Start Docker service
+  service:
+    name: docker
+    state: started
+    enabled: yes
+
+- name: Install Docker SDK
+  pip:
+    name: docker
+
+...
