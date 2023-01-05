@@ -1,0 +1,15 @@
+---
+- name: Add repo key
+  ansible.builtin.apt_key:
+    url: https://packagecloud.io/citusdata/community/gpgkey
+    validate_certs: no
+
+- name: Add the Citus Data repository
+  ansible.builtin.apt_repository:
+    repo: 'deb https://packagecloud.io/citusdata/community/ubuntu/ bionic main'
+    state: present
+
+- name: Install Citus
+  ansible.builtin.apt:
+    pkg: "{{ citus_package_name }}"
+    update_cache: yes

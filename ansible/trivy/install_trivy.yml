@@ -1,0 +1,91 @@
+---
+- block:
+    - name: add trivy repo key
+      ansible.builtin.apt_key:
+        url: https://aquasecurity.github.io/trivy-repo/deb/public.key
+        state: present
+    - name: add trivy repo
+      ansible.builtin.apt_repository:
+        repo: deb https://aquasecurity.github.io/trivy-repo/deb focal main
+        state: present
+    - name: install trivy
+      apt:
+        update_cache: yes
+        install_recommends: yes
+        name: trivy
+    - name: make create trivy script directory
+      file:
+        path: /etc/trivy.d
+        state: directory
+        owner: vuls
+        group: vuls
+        mode: '0750'
+    - name: create trivy reports directory
+      file:
+        path: /var/trivy
+        state: directory
+        owner: vuls
+        group: vuls
+        mode: '0750'
+    - name: copy the necessary files
+      copy:
+        src: "{{ item }}"
+        dest: /etc/trivy.d/
+        owner: vuls
+        group: vuls
+        mode: 0755
+      with_items:
+        - trivyscan.sh
+        - teamslist
+        - differ.py
+
+    - name: add script to crontab
+      cron:
+        name: "Run trivy scans"
+        user: vuls
+        job: "/etc/trivy.d/trivyscan.sh >> /var/trivy/trivycrontab.log 2>&1"
+        minute: "0"
+        hour: "7"
+    - name: add log remove to crontab
+      cron:
+        name: "Remove previous log"
+        user: vuls
+        job: "rm /var/trivy/trivycrontab.log"
+        minute: "30"
+        hour: "6"
+    - name: add diff script to crontab
+      cron:
+        name: "Run differ script every Monday"
+        user: vuls
+        job: "/usr/bin/python3 /etc/trivy.d/diff_reports.py"
+        minute: "30"
+        hour: "8"
+        weekday: "1"
+  become: true
+  become_user: root
+
+- block:
+    - name: login to Docker registry
+      docker_login:
+        registry: docker-registry.hello.nl 
+        username: john
+        password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        state: present
+    - name: login to Docker registry
+      docker_login:
+        registry: docker-registry.hello.nl 
+        username: john 
+        password: !vault |
+          $ANSIBLE_VAULT;1.1;AES256
+          3830663863353938373961636333303133353138343138660a303038613066383333383165386130
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+          XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+        state: present
+  become: true
+  become_user: vuls
