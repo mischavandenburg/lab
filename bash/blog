@@ -1,0 +1,61 @@
+#!/bin/bash
+
+# Define a function to prompt the user for a filename
+get_filename() {
+  read -p "Enter a filename: " filename
+}
+
+# Define a function to create and open a file in the specified directory
+open_file() {
+
+  date=$(date +"%Y-%m-%d")
+  # Cd into the directory
+  cd "$1"
+  # Create the file in the specified directory
+  touch "$1/$filename.md"
+
+  # set up the yaml frontmatter
+  echo "---" >> "$1/$filename.md"
+  echo "title: $filename" >> "$1/$filename.md"
+  echo "date: $date" >> "$1/$filename.md"
+  echo "draft: true" >> "$1/$filename.md"
+  echo "---" >> "$1/$filename.md"
+
+  # Open the file in Neovim
+  nvim "$1/$filename.md"
+}
+
+# Check the value of the first parameter
+case "$1" in
+  zet)
+    # Call the function to get the filename
+    get_filename
+
+    # Call the function to create and open the file in the specified directory
+    open_file "$HOME/websites/blog/content/zet"
+    ;;
+  article)
+    # Call the function to get the filename
+    get_filename
+
+    # Call the function to create and open the file in the specified directory
+    open_file "$HOME/websites/blog/content/articles"
+    ;;
+    
+  reset)
+    rm -rf "$HOME/websites/blog/public"
+    hugo
+    hugo server --disableFastRender
+    ;;
+
+  "")
+    # Change to the websites/blog directory if no argument was given
+    cd "$HOME/websites/blog"
+    ;;
+
+  *)
+    # Print an error message if the parameter was not "zet" or "article"
+    echo "Error: Invalid parameter. Usage: blog zet|article"
+    ;;
+esac
+
