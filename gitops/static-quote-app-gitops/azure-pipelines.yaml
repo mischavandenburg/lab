@@ -1,0 +1,35 @@
+# This pipeline triggers when the image build finishes.
+# It checks out the GitOps repo and makes a new branch with the new tag in the deployment template.
+# By Mischa van den Burg
+
+trigger: none
+pr: none
+
+resources:
+  pipelines:
+  - pipeline: image-build-pipeline # Name of the pipeline resource.
+    source:  mischavandenburg.static-quote-app # The name of the pipeline referenced by this pipeline resource.
+    trigger: true
+
+variables:
+- group: mischa-quote
+- name: passed_tag
+  value: $[variables.tag]
+- name: branch_name
+  value: "pipeline-$(passed_tag)"
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+  - checkout: self
+    persistCredentials: true
+    clean: true
+  - script: |
+      git config --global user.email "mischa@pipeline.com"
+      git config --global user.name "Mischa Pipeline"
+      git switch -c "$(branch_name)"
+      sed -i "s/tag:.*/tag: $(passed_tag)/" values.yaml 
+      git add .
+      git commit -m "Update tag to $(passed_tag)"
+      git push --set-upstream origin "$(branch_name)"

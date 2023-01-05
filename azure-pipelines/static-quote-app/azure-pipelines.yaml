@@ -1,0 +1,50 @@
+# This pipeline builds a Docker image from a repo and pushes it to Docker hub with the build ID as tag.
+# Then it updates an Azure DevOps group variable with the tag, which will be used in the GitOps pipeline.
+
+trigger:
+- main
+
+resources:
+- repo: self
+
+variables:
+- group: mischa-quote
+- name: tag
+  value: $(Build.BuildId)
+
+pool:
+  vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: build_docker_image
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Login to Docker Hub
+      inputs:
+        command: login
+        containerRegistry: mischa-docker-hub
+    - task: Docker@2
+      displayName: Build and Push
+      inputs:
+        command: buildAndPush
+        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+        repository: mischavandenburg/static-quote
+        tags: $(tag)
+
+- stage: update_tag
+  jobs:
+  - job: update_tag_variable 
+    displayName: Update Tag Variable
+    steps:
+      - bash: |
+          az pipelines variable-group variable \
+          update --group-id 202 \
+          --org $(System.CollectionUri) \
+          --project $(System.TeamProject) \
+          --name tag --value $(Build.BuildId)
+        env:
+          AZURE_DEVOPS_EXT_PAT: $(System.AccessToken)
