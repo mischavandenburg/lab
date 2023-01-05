@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# A bash script that helps me create notes for my blog
+# by running 'blog zet' or 'blog article' a markdown file is created in the proper directory, with my chosen filename.
+
 # Define a function to prompt the user for a filename
 get_filename() {
   read -p "Enter a filename: " filename
