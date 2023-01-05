@@ -1,0 +1,48 @@
+---
+- name: Install docker
+  hosts: all
+
+  tasks:
+    - name: install yum utils
+      yum:
+        name: yum-utils
+        state: latest
+      become: yes
+
+    - name: add docker repo
+      get_url:
+        url: https://download.docker.com/linux/centos/docker-ce.repo
+        dest: /etc/yum.repos.d/docker-ce.repo
+      become: yes
+
+    - name: enable docker edge repo
+      ini_file:
+        dest: /etc/yum.repos.d/docker-ce.rep
+        section: 'docker-ce-edge'
+        option: enabled
+        value: 0
+      become: yes
+
+    - name: enable docker test repo
+      ini_file:
+        dest: /etc/yum.repos.d/docker-ce.repo
+        section: 'docker-ce-test'
+        option: enabled
+        value: 0
+      become: yes
+
+    - name: install docker
+      package:
+        name: 
+          - docker-ce
+          - docker-ce-cli
+          - containerd.io 
+        state: latest
+      become: yes
+
+    - name: start docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+      become: yes

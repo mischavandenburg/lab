@@ -1,0 +1,11 @@
+---
+# The main playbook from which the roles are started
+# Mischa van den Burg
+
+- name: call roles
+  hosts: all
+  become: true
+
+  roles:
+    - docker_installer
+    - make_partition
