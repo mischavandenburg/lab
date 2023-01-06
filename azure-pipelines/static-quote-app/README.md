@@ -1,16 +1,8 @@
 # Static Quote App
 
-A simple flask app that displays a quote. 
+A simple flask app that displays a quote, built and pushed to Docker Registry with an Azure pipeline. 
 
-To use for my pipelines and kubernetes labs and projects.
-
-www.mischavandenburg.com
-
-This was very useful to gain some experinece with Azure Pipelines.
-
-This is hosted in its own repo:
-
-https://github.com/mischavandenburg/static-quote-app
+I had to do some hacking to update Variable Groups, which is not natively supported. Interestingly, you can read from them in pipelines, but there is no functionality (yet) to update them. So I had to call the CLI from the pipeline.
 
 Used in this blog post:
 
