@@ -51,6 +51,23 @@ case "$1" in
     hugo server --disableFastRender
     ;;
 
+  pub)
+    # ask for commit message, rebuild the site, push to blog repo, then push to hosting repo
+    read -p "Enter commit message: " commitmessage 
+    cd "$HOME/websites/blog/"
+    rm -rf "$HOME/websites/blog/public"
+    hugo
+    git add .
+    git commit -m "$commitmessage"
+    git push
+    rm -rf $HOME/git/tech-blog-hosting/* 
+    cp -r $HOME/websites/blog/public/* $HOME/git/tech-blog-hosting/ 
+    cd $HOME/git/tech-blog-hosting/ 
+    git add .
+    git commit -m "$commitmessage"
+    git push
+    ;;
+
   "")
     # Change to the websites/blog directory if no argument was given
     cd "$HOME/websites/blog"
