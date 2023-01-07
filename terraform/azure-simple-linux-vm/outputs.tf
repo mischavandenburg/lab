@@ -3,5 +3,5 @@ output "resource_group_name" {
 }
 
 output "public_ip_address" {
-  value = azurerm_linux_virtual_machine.vschema_vm.public_ip_address
+  value = azurerm_linux_virtual_machine.mischa_vm.public_ip_address
 }
