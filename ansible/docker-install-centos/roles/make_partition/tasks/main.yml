@@ -1,0 +1,85 @@
+---
+# This roles creates partitions and mounts them. 
+# As a challenge I wanted to first make a partition of 1GB and then one of 2GB. I am using a 4GB disk.
+# This meant I needed to figure out where the 1GB partition ended
+# Mischa van den Burg
+
+
+- name: create 1gb partition
+  community.general.parted:
+    device: /dev/nvme1n1
+    number: 1
+    part_end: 1GiB
+    part_type: primary
+    fs_type: xfs
+    state: present
+
+# After we made the first partition, we need to check where the next one starts:
+
+- name: read device information
+  community.general.parted:
+    device: /dev/nvme1n1
+    unit: MiB
+  register: device_info
+
+- name: create 2gb partition, starting from last partition
+  community.general.parted:
+    device: /dev/nvme1n1
+    number: 2
+    part_type: primary
+    part_end: 3GiB
+    part_start: "{{ device_info.partitions[0].end +1}}MiB"
+
+    fs_type: ext4
+    state: present
+
+
+- name: create filesystems on partition 1
+  community.general.filesystem:
+    device: /dev/nvme1n1p1
+    fstype: xfs
+    state: present
+
+- name: create filesystems on partition 2
+  community.general.filesystem:
+    device: /dev/nvme1n1p2
+    fstype: xfs
+    state: present
+
+# After creating the partitions and filesytems, we need to mount them.
+# Mounting partition 1 as /appl and 2 as /data
+# First, let's make the directories on the server where they will be mounted.
+
+- name: create appl directory for mounting
+  file:
+    path: /appl
+    state: directory
+    mode: '0755'
+
+- name: create data directory for mounting
+  file:
+    path: /data
+    state: directory
+    mode: '0755'
+
+# Mounting the partitions
+
+- name: mount appl partition
+  ansible.posix.mount:
+    src: /dev/nvme1n1p1
+    path: /appl
+    fstype: xfs
+    state: mounted
+    boot: yes
+
+- name: mount data partition
+  ansible.posix.mount:
+    src: /dev/nvme1n1p2
+    path: /data
+    fstype: xfs
+    state: mounted
+    boot: yes
+
+
+
+...
