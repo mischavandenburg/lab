@@ -22,6 +22,17 @@ open_file() {
   echo "title: $filename" >> "$1/$filename.md"
   echo "date: $date" >> "$1/$filename.md"
   echo "draft: true" >> "$1/$filename.md"
+
+  if [[ $2 = "zet" ]]; then
+      echo "tags:" >> "$1/$filename.md"
+      echo "- Zettelkasten" >> "$1/$filename.md"
+  fi
+
+  if [[ $2 = "article" ]]; then
+      echo "tags:" >> "$1/$filename.md"
+      echo "- Article" >> "$1/$filename.md"
+  fi
+
   echo "---" >> "$1/$filename.md"
 
   # Open the file in Neovim
@@ -35,14 +46,15 @@ case "$1" in
     get_filename
 
     # Call the function to create and open the file in the specified directory
-    open_file "$HOME/websites/blog/content/zet"
+    open_file "$HOME/websites/blog/content/zet" "zet"
+
     ;;
   article)
     # Call the function to get the filename
     get_filename
 
     # Call the function to create and open the file in the specified directory
-    open_file "$HOME/websites/blog/content/articles"
+    open_file "$HOME/websites/blog/content/zet/articles" "article"
     ;;
     
   reset)
