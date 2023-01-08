@@ -1,4 +1,6 @@
-# README 
+# Docker server setup
+
+Installs Docker on a Centos 8 VM
 
 Run with using the following command:
 ansible-playbook -i inventory main.yml
