@@ -26,7 +26,3 @@
     src: /tmp/pocketbase.zip
     dest: /opt/pocketbase/
     remote_src: true
-
-# run pocketbase in the background, needs more configuration to detach Ansible
-# - name: Run Pocketbase
-#   command: "cd /opt/pocketbase && ./pocketbase serve &"
