@@ -1,0 +1,40 @@
+---
+
+- name: Install pre-reqs
+  ansible.builtin.apt:
+    pkg:
+      - gpg
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: true
+
+- name: Run script to add keyring and repository
+  # only run if /etc/apt/keyrings/docker.gpg does not exist
+  ansible.builtin.script: docker-add-key.sh
+  args:
+    creates: /etc/apt/keyrings/docker.gpg
+
+- name: Run script to add the Docker repository
+  # only run if /etc/apt/sources.list.d/docker.list does not exist
+  ansible.builtin.script: docker-add-repo.sh
+  args:
+    creates: /etc/apt/sources.list.d/docker.list
+
+- name: Install Docker
+  ansible.builtin.apt:
+    pkg:
+      - docker-ce
+      - docker-ce-cli
+      - containerd.io
+      - docker-compose-plugin
+    state: present
+    update_cache: true
+
+- name: Start and enable Docker service
+  ansible.builtin.service:
+    name: docker
+    state: started
+    enabled: true
