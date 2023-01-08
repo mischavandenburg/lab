@@ -1,0 +1,42 @@
+trigger: 
+- main
+
+pool: 
+   vmImage: ubuntu-latest
+
+stages:
+- stage: Build
+  displayName: Build image
+  jobs:
+  - job: build_docker_image
+    displayName: Build
+    steps:
+    - task: Docker@2
+      displayName: Login to Docker Hub
+      inputs:
+        command: login
+        containerRegistry: mischa-docker-hub
+    - task: Docker@2
+      displayName: Build and Push
+      inputs:
+        command: buildAndPush
+        dockerfile: '$(Build.SourcesDirectory)/Dockerfile'
+        repository: mischavandenburg/svelte-test
+        tags: $(Build.BuildId)
+
+- stage: Deploy
+  displayName: Deploy
+  jobs:
+  - deployment: VMDeploy
+    displayName: Deploy to VM
+    environment: 
+     name: dev
+     resourceType: VirtualMachine
+    strategy:
+       runOnce:
+          deploy:   
+            steps:
+              - script: |
+                  sudo docker stop svelte-test
+                  sudo docker rm svelte-test
+                  sudo docker run --name svelte-test -p 8080:80 -d mischavandenburg/svelte-test:$(Build.BuildId)
