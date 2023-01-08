@@ -16,10 +16,14 @@ open_file() {
   cd "$1" || exit
   # Create the file in the specified directory
   touch "$1/$filename.md"
+  
+  # Format the title by removing dashes
+  title=$filename
+  title="${title//-/ }"
 
   # set up the yaml frontmatter
   echo "---" >> "$1/$filename.md"
-  echo "title: $filename" >> "$1/$filename.md"
+  echo "title: $title" >> "$1/$filename.md"
   echo "date: $date" >> "$1/$filename.md"
   echo "draft: true" >> "$1/$filename.md"
 
