@@ -12,7 +12,12 @@ set -e
 # if no argument, more than 2 or less than 2 arguments are given, stop the script by returning 1
 if [[ -z "$1$2" || $# -gt 2 || $# -lt 2 ]]; then
     echo "usage: pomocalc HOURS MINUTES"
-    return 1 &> /dev/null
+    exit 1
+fi
+
+if [[ $1 -lt 0 || $2 -lt 0 ]]; then
+    echo -n "Error: Please enter positive numbers for hours and minutes"
+    exit 1
 fi
 
 minutes=$(("$1" * 60 + "$2"))
