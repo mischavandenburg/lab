@@ -2,9 +2,6 @@ param location string = 'westus3'
 param storageAccountName string = 'toylaunch${uniqueString(resourceGroup().id)}'
 param appServiceAppName string = 'toylaunch${uniqueString(resourceGroup().id)}'
 
-/* we don't need to set this one because an app service plan name does not need to be unique */
-var appServicePlanName = 'toy-product-launch-plan'
-
 @allowed([
   'nonprod'
   'prod'
@@ -13,7 +10,6 @@ param environmentType string
 
 /* if the environment ttype is prod, take Standard_GRS, else take Standard_LRS */
 var storageAccountSkuName = (environmentType == 'prod') ? 'Standard_GRS' : 'Standard_LRS'
-var appServicePlanSkuName = (environmentType == 'prod') ? 'P2v3' : 'F1'
 
 resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   name: storageAccountName
@@ -27,19 +23,16 @@ resource storageAccount 'Microsoft.Storage/storageAccounts@2022-09-01' = {
   }
 }
 
-resource appServicePlan 'Microsoft.Web/serverFarms@2022-03-01' = {
-  name: appServicePlanName
-  location: location
-  sku: {
-    name: appServicePlanSkuName
+/* We are specifying the parameters for the module here. They are referenced from the parent template. */
+
+module appService 'modules/appService.bicep' = {
+  name: 'appService'
+  params: {
+    location: location
+    appServiceAppName: appServiceAppName
+    environmentType: environmentType
   }
 }
 
-resource appServiceApp 'Microsoft.Web/sites@2022-03-01' = {
-  name: appServiceAppName
-  location: location
-  properties: {
-    serverFarmId: appServicePlan.id
-    httpsOnly: true
-  }
-}
+/* We defined the output only in the appService module, so it won't be printed by default. If we want the output, we need to add: */
+output appServiceAppHostName string = appService.outputs.appServiceAppHostName
