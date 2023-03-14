@@ -5,6 +5,8 @@ param location string = resourceGroup().location
 var cosmosDBDatabaseName = 'FlightTests'
 var cosmosDBContainerName = 'FlightTests'
 var cosmosDBContainerPartitionKey = '/droneId'
+var logAnalyticsWorkspaceName = 'ToyLogs'
+var cosmosDBAccountDiagnosticSettingsName = 'route-logs-to-log-analytics'
 
 resource cosmosDBAccount 'Microsoft.DocumentDB/databaseAccounts@2020-04-01' = {
   name: cosmosDBAccountName
@@ -45,5 +47,26 @@ resource cosmosDBDatabase 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@20
       }
       options: {}
     }
+  }
+}
+
+/* invoke the existing workspace which I created using the CLI */
+resource logAnalyticsWorkspace 'Microsoft.OperationalInsights/workspaces@2020-03-01-preview' existing = {
+  name: logAnalyticsWorkspaceName
+}
+
+/* The scope keyword is telling Bicep that it should be attached to the Cosmos DB account. */
+
+resource cosmosDBAccountDiagnostics 'Microsoft.Insights/diagnosticSettings@2017-05-01-preview' = {
+  scope: cosmosDBAccount
+  name: cosmosDBAccountDiagnosticSettingsName
+  properties: {
+    workspaceId: logAnalyticsWorkspace.id
+    logs: [
+      {
+        category: 'DataPlaneRequests'
+        enabled: true
+      }
+    ]
   }
 }
