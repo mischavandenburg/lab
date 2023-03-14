@@ -1,119 +1,140 @@
+@description('The location into which your Azure resources should be deployed.')
 param location string = resourceGroup().location
 
+@description('Select the type of environment you want to provision. Allowed values are Production and Test.')
 @allowed([
-  'F1'
-  'D1'
-  'B1'
-  'B2'
-  'B3'
-  'S1'
-  'S2'
-  'S3'
-  'P1'
-  'P2'
-  'P3'
-  'P4'
+  'Production'
+  'Test'
 ])
-param skuName string = 'F1'
+param environmentType string
 
-@minValue(1)
-param skuCapacity int = 1
-param sqlAdministratorLogin string
+@description('A unique suffix to add to resource names that need to be globally unique.')
+@maxLength(13)
+param resourceNameSuffix string = uniqueString(resourceGroup().id)
+
+@description('The administrator login username for the SQL server.')
+param sqlServerAdministratorLogin string
 
 @secure()
-param sqlAdministratorLoginPassword string
+@description('The administrator login password for the SQL server.')
+param sqlServerAdministratorLoginPassword string
 
-param managedIdentityName string
-param roleDefinitionId string = 'b24988ac-6180-42a0-ab88-20f7382dd24c'
-param webSiteName string = 'webSite${uniqueString(resourceGroup().id)}'
-param container1Name string = 'productspecs'
-param productmanualsName string = 'productmanuals'
+@description('The tags to apply to each resource.')
+param tags object = {
+  CostCenter: 'Marketing'
+  DataClassification: 'Public'
+  Owner: 'WebsiteTeam'
+  Environment: 'Production'
+}
 
-var hostingPlanName = 'hostingplan${uniqueString(resourceGroup().id)}'
-var sqlserverName = 'toywebsite${uniqueString(resourceGroup().id)}'
-var storageAccountName = 'toywebsite${uniqueString(resourceGroup().id)}'
+// Define the names for resources.
+var appServiceAppName = 'webSite${resourceNameSuffix}'
+var appServicePlanName = 'AppServicePLan'
+var sqlServerName = 'sqlserver${resourceNameSuffix}'
+var sqlDatabaseName = 'ToyCompanyWebsite'
+var managedIdentityName = 'WebSite'
+var applicationInsightsName = 'AppInsights'
+var storageAccountName = 'toywebsite${resourceNameSuffix}'
+var blobContainerNames = [
+  'productspecs'
+  'productmanuals'
+]
 
-resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
-  name: storageAccountName
-  location: 'eastus'
-  sku: {
-    name: 'Standard_LRS'
+@description('Define the SKUs for each component based on the environment type.')
+var environmentConfigurationMap = {
+  Production: {
+    appServicePlan: {
+      sku: {
+        name: 'S1'
+        capacity: 2
+      }
+    }
+    storageAccount: {
+      sku: {
+        name: 'Standard_GRS'
+      }
+    }
+    sqlDatabase: {
+      sku: {
+        name: 'S1'
+        tier: 'Standard'
+      }
+    }
   }
-  kind: 'StorageV2'
-  properties: {
-    accessTier: 'Hot'
-  }
-
-  resource blobServices 'blobServices' existing = {
-    name: 'default'
+  Test: {
+    appServicePlan: {
+      sku: {
+        name: 'F1'
+        capacity: 1
+      }
+    }
+    storageAccount: {
+      sku: {
+        name: 'Standard_LRS'
+      }
+    }
+    sqlDatabase: {
+      sku: {
+        name: 'Basic'
+      }
+    }
   }
 }
 
-resource container1 'Microsoft.Storage/storageAccounts/blobServices/containers@2019-06-01' = {
-  parent: storageAccount::blobServices
-  name: container1Name
-}
+@description('The role definition ID of the built-in Azure \'Contributor\' role.')
+var contributorRoleDefinitionId = 'b24988ac-6180-42a0-ab88-20f7382dd24c'
+var storageAccountConnectionString = 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
 
-resource sqlserver 'Microsoft.Sql/servers@2019-06-01-preview' = {
-  name: sqlserverName
+resource sqlServer 'Microsoft.Sql/servers@2019-06-01-preview' = {
+  name: sqlServerName
   location: location
+  tags: tags
   properties: {
-    administratorLogin: sqlAdministratorLogin
-    administratorLoginPassword: sqlAdministratorLoginPassword
+    administratorLogin: sqlServerAdministratorLogin
+    administratorLoginPassword: sqlServerAdministratorLoginPassword
     version: '12.0'
   }
 }
 
-var databaseName = 'ToyCompanyWebsite'
-resource sqlserverName_databaseName 'Microsoft.Sql/servers/databases@2020-08-01-preview' = {
-  name: '${sqlserver.name}/${databaseName}'
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2020-08-01-preview' = {
+  parent: sqlServer
+  name: sqlDatabaseName
   location: location
-  sku: {
-    name: 'Basic'
-  }
-  properties: {
-    collation: 'SQL_Latin1_General_CP1_CI_AS'
-    maxSizeBytes: 1073741824
-  }
+  sku: environmentConfigurationMap[environmentType].sqlDatabase.sku
+  tags: tags
 }
 
-resource sqlserverName_AllowAllAzureIPs 'Microsoft.Sql/servers/firewallRules@2014-04-01' = {
-  name: '${sqlserver.name}/AllowAllAzureIPs'
+resource sqlFirewallRuleAllowAllAzureIPs 'Microsoft.Sql/servers/firewallRules@2014-04-01' = {
+  parent: sqlServer
+  name: 'AllowAllAzureIPs'
   properties: {
     endIpAddress: '0.0.0.0'
     startIpAddress: '0.0.0.0'
   }
-  dependsOn: [
-    sqlserver
-  ]
 }
 
-resource productmanuals 'Microsoft.Storage/storageAccounts/blobServices/containers@2019-06-01' = {
-  name: '${storageAccount.name}/default/${productmanualsName}'
-}
-resource hostingPlan 'Microsoft.Web/serverfarms@2020-06-01' = {
-  name: hostingPlanName
+resource appServicePlan 'Microsoft.Web/serverfarms@2020-06-01' = {
+  name: appServicePlanName
   location: location
-  sku: {
-    name: skuName
-    capacity: skuCapacity
-  }
+  sku: environmentConfigurationMap[environmentType].appServicePlan.sku
+  tags: tags
 }
 
-resource webSite 'Microsoft.Web/sites@2020-06-01' = {
-  name: webSiteName
+resource appServiceApp 'Microsoft.Web/sites@2020-06-01' = {
+  name: appServiceAppName
   location: location
+  tags: tags
   properties: {
-    serverFarmId: hostingPlan.id
+    serverFarmId: appServicePlan.id
     siteConfig: {
       appSettings: [
         {
           name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
-          value: AppInsights_webSiteName.properties.InstrumentationKey
+          value: applicationInsights.properties.InstrumentationKey
         }
         {
           name: 'StorageAccountConnectionString'
-          value: 'DefaultEndpointsProtocol=https;AccountName=${storageAccount.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storageAccount.id, storageAccount.apiVersion).keys[0].value}'
+          value: storageAccountConnectionString
         }
       ]
     }
@@ -121,41 +142,52 @@ resource webSite 'Microsoft.Web/sites@2020-06-01' = {
   identity: {
     type: 'UserAssigned'
     userAssignedIdentities: {
-      '${msi.id}': {}
+      '${managedIdentity.id}': {} // This format is required when working with user-assigned managed identities.
     }
   }
 }
 
-// We don't need this anymore. We use a managed identity to access the database instead.
-//resource webSiteConnectionStrings 'Microsoft.Web/sites/config@2020-06-01' = {
-//  name: '${webSite.name}/connectionstrings'
-//  properties: {
-//    DefaultConnection: {
-//      value: 'Data Source=tcp:${sqlserver.properties.fullyQualifiedDomainName},1433;Initial Catalog=${databaseName};User Id=${sqlAdministratorLogin}@${sqlserver.properties.fullyQualifiedDomainName};Password=${sqlAdministratorLoginPassword};'
-//      type: 'SQLAzure'
-//    }
-//  }
-//}
-
-resource msi 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
-  name: managedIdentityName
+resource storageAccount 'Microsoft.Storage/storageAccounts@2019-06-01' = {
+  name: storageAccountName
   location: location
-}
-
-resource roleassignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
-  name: guid(roleDefinitionId, resourceGroup().id)
-
+  sku: environmentConfigurationMap[environmentType].storageAccount.sku
+  kind: 'StorageV2'
   properties: {
-    principalType: 'ServicePrincipal'
-    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', roleDefinitionId)
-    principalId: msi.properties.principalId
+    accessTier: 'Hot'
+  }
+
+  resource blobServices 'blobServices' existing = {
+    name: 'default'
+
+    resource containers 'containers' = [for blobContainerName in blobContainerNames: {
+      name: blobContainerName
+    }]
   }
 }
 
-resource AppInsights_webSiteName 'Microsoft.Insights/components@2018-05-01-preview' = {
-  name: 'AppInsights'
+@description('A user-assigned managed identity that is used by the App Service app to communicate with a storage account.')
+resource managedIdentity 'Microsoft.ManagedIdentity/userAssignedIdentities@2018-11-30' = {
+  name: managedIdentityName
+  location: location
+  tags: tags
+}
+
+@description('Grant the \'Contributor\' role to the user-assigned managed identity, at the scope of the resource group.')
+resource roleAssignment 'Microsoft.Authorization/roleAssignments@2020-04-01-preview' = {
+  name: guid(contributorRoleDefinitionId, resourceGroup().id) // Create a GUID based on the role definition ID and scope (resource group ID). This will return the same GUID every time the template is deployed to the same resource group.
+  properties: {
+    principalType: 'ServicePrincipal'
+    roleDefinitionId: subscriptionResourceId('Microsoft.Authorization/roleDefinitions', contributorRoleDefinitionId)
+    principalId: managedIdentity.properties.principalId
+    description: 'Grant the "Contributor" role to the user-assigned managed identity so it can access the storage account.'
+  }
+}
+
+resource applicationInsights 'Microsoft.Insights/components@2018-05-01-preview' = {
+  name: applicationInsightsName
   location: location
   kind: 'web'
+  tags: tags
   properties: {
     Application_Type: 'web'
   }
