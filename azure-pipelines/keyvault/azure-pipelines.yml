@@ -1,0 +1,31 @@
+# Azure Pipeline to create a resource group and a key vault
+
+trigger:
+- main # Trigger the pipeline on commits to the main branch
+
+pool:
+  vmImage: 'ubuntu-latest' # Use an Ubuntu agent
+
+variables:
+  resourceGroupName: 'rg-mischa-$(Build.BuildId)'
+  location: 'westeurope'
+
+steps: 
+# create resource group
+- task: AzureCLI@2
+  inputs:
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az group create --name $(resourceGroupName) --location $(location)
+
+# deploy key vault bicep template with azure cli task and bash
+- task: AzureCLI@2
+  inputs:
+    scriptType: 'bash'
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      az deployment group create --resource-group $(resourceGroupName) --template-file ./keyvault.bicep --parameters ./keyvault.bicepparam
+
+
+
