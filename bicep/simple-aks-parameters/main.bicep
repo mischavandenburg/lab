@@ -4,7 +4,7 @@
 param location string = resourceGroup().location
 
 @description('Name of the AKS cluster')
-param clusterName string = 'coffeecluster'
+param clusterName string
 
 @description('Kubernetes Version')
 param kubernetesVersion string
