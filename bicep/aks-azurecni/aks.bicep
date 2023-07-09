@@ -1,5 +1,3 @@
-// deploy a simple aks cluster with one node pool
-
 @description('Location of the AKS cluster')
 param location string = resourceGroup().location
 
@@ -21,7 +19,7 @@ param minCount int = 1
 @description('maximum number of nodes')
 param maxCount int = 3
 
-@description('Prefix for resources')
+@description('Prefix for deployment')
 param prefix string
 
 resource vnet 'Microsoft.Network/virtualNetworks@2022-11-01' = {
@@ -29,7 +27,9 @@ resource vnet 'Microsoft.Network/virtualNetworks@2022-11-01' = {
   location: location
   properties: {
     addressSpace: {
-      addressPrefixes: [ '10.224.0.0/16' ]
+      addressPrefixes: [
+        '10.108.0.0/16'
+      ]
     }
   }
 }
@@ -38,7 +38,7 @@ resource aks_subnet 'Microsoft.Network/virtualNetworks/subnets@2022-11-01' = {
   name: '${prefix}-aks-subnet'
   parent: vnet
   properties: {
-    addressPrefix: '10.224.0.0/16'
+    addressPrefix: '10.108.0.0/16'
   }
 }
 
@@ -55,10 +55,10 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2023-03-02-previ
     }
     kubernetesVersion: kubernetesVersion
     enableRBAC: enableRBAC
-    dnsPrefix: clusterName
+    dnsPrefix: '${prefix}-${clusterName}'
     agentPoolProfiles: [
       {
-        name: 'systempool'
+        name: 'system'
         mode: 'System'
         count: 1
         vmSize: 'Standard_B4ms'
@@ -71,7 +71,7 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2023-03-02-previ
         maxPods: 110
       }
       {
-        name: 'userpool'
+        name: 'user'
         mode: 'User'
         count: 1
         vmSize: 'Standard_B4ms'
