@@ -3,7 +3,7 @@
 param location string = resourceGroup().location
 
 resource kv 'Microsoft.KeyVault/vaults@2023-02-01' = {
-  name: 'mischacoffekeyvault866'
+  name: 'mischa-key-vault-138'
   location: location
   properties: {
     sku: {
@@ -14,3 +14,5 @@ resource kv 'Microsoft.KeyVault/vaults@2023-02-01' = {
     enableRbacAuthorization: true
   }
 }
+
+assert kvSKU = kv.sku.name == 'standard'
