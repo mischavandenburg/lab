@@ -4,3 +4,43 @@ metadata:
   name: test1
   labels:
     name: test1
+---
+# Example of PostgreSQL cluster
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: cluster-example-vcs
+spec:
+  instances: 1
+
+  # Example of rolling update strategy:
+  # - unsupervised: automated update of the primary once all
+  #                 replicas have been upgraded (default)
+  # - supervised: requires manual supervision to perform
+  #               the switchover of the primary
+  primaryUpdateStrategy: unsupervised
+
+  # Require 1Gi of space
+  storage:
+    size: 1Gi
+---
+apiVersion: postgresql.cnpg.io/v1
+kind: Pooler
+metadata:
+  name: cluster-example-pooler-rw
+spec:
+  cluster:
+    name: cluster-example
+  instances: 2
+  type: rw
+  pgbouncer:
+    poolMode: session
+    parameters:
+      application_name_add_host: "1"
+      server_check_delay: "30.0"
+      server_lifetime: "1800"
+      server_idle_timeout: "180.0"
+      server_connect_timeout: "15"
+      client_login_timeout: "60.0"
+      default_pool_size: "20"
+
