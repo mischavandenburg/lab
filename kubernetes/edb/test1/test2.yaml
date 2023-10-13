@@ -1,18 +1,19 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: test1
+  name: test2
   labels:
-    name: test1
+    name: test2
+    azure-key-vault-env-injection: enabled
 ---
 # Example of PostgreSQL cluster
 apiVersion: postgresql.k8s.enterprisedb.io/v1
 kind: Cluster
 metadata:
-  name: test1-cluster
-  namespace: test1
+  name: test2-cluster
+  namespace: test2
 spec:
-  instances: 1
+  instances: 2
 
   # Example of rolling update strategy:
   # - unsupervised: automated update of the primary once all
@@ -28,11 +29,11 @@ spec:
 apiVersion: postgresql.k8s.enterprisedb.io/v1
 kind: Pooler
 metadata:
-  name: test1-pooler-rw
-  namespace: test1
+  name: test2-pooler-rw
+  namespace: test2
 spec:
   cluster:
-    name: test1-cluster
+    name: test2-cluster
   instances: 2
   type: rw
   pgbouncer:
