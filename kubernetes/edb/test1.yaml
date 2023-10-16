@@ -12,7 +12,7 @@ metadata:
   name: test1-cluster
   namespace: test1
 spec:
-  instances: 1
+  instances: 2
 
   # Example of rolling update strategy:
   # - unsupervised: automated update of the primary once all

@@ -1,0 +1,7 @@
+#/bin/bash
+# install edb on the cluster
+
+kubectl apply -f https://get.enterprisedb.io/cnp/postgresql-operator-1.20.2.yaml
+
+# verify
+kubectl get deploy -n postgresql-operator-system postgresql-operator-controller-manager
