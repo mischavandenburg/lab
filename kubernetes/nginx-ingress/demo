@@ -1,0 +1,6 @@
+#!/bin/bash
+# this will create a pod and ingress for quick testing
+
+kubectl create deployment demo --image=httpd --port=80
+kubectl expose deployment demo
+kubectl create ingress demo --class=nginx --rule="test.rancher.vanoord.com/*=demo:80"
