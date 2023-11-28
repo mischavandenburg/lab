@@ -1,7 +1,7 @@
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: pyramid-backend-pdb
+  name: pyramid-frontend-pdb
 spec:
   minAvailable: 1
   selector:
