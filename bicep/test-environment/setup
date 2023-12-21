@@ -1,0 +1,25 @@
+#!/bin/bash
+
+# script to set up a test environment with an AKS cluster
+# run with the "--delete" flag to delete the test environment
+# it requires "ripgrep" to be installed
+
+rgname=mischa-test
+location=westeurope
+clustername=$(rg -oP "(?<=param clusterName = ')[^']+" aks.bicepparam)
+
+# first check if we are supposed to delete the entire test environment
+if [[ $1 = "--delete" ]]; then
+	echo "Deleting resource group $rgname"
+	az group delete --name "$rgname" --yes --no-wait
+	echo "Your mess has been cleaned up. Have a nice day!"
+	exit 0
+fi
+
+az group create --name $rgname --location $location
+
+az deployment group create -f main.bicep -p aks.bicepparam -g $rgname
+
+az aks get-credentials --resource-group $rgname --name "$clustername" --admin
+
+echo "Your test environment has been created. Enjoy your new cluster!"
