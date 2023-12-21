@@ -2,6 +2,8 @@
 
 This script and templates deploy a cheap AKS cluster in a newly created resource group.
 
+Adjust the resource group name and location as you wish in the setup file.
+
 ## Requirements
 
 * bash shell
