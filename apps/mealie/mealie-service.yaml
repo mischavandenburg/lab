@@ -10,6 +10,6 @@ spec:
       port: 9925
       targetPort: 9000
   selector:
-    io.kompose.service: mealie
+    app: mealie
 status:
   loadBalancer: {}
