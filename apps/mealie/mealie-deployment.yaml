@@ -32,11 +32,11 @@ spec:
             - name: POSTGRES_DB
               value: mealie
             - name: POSTGRES_PASSWORD
-              value: TxVeQ4nN82SSiYHoswqOURZvQDaL4KpNElsCEEe9bwDxMd73KckIeXzS5cU6LiC2
+              value: testpw
             - name: POSTGRES_PORT
               value: "5432"
             - name: POSTGRES_SERVER
-              value: cluster-example-full-rw.database
+              value: mealie-postgres-rw
             - name: POSTGRES_USER
               value: mealie
             - name: PUID
