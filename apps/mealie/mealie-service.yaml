@@ -3,7 +3,7 @@ kind: Service
 metadata:
   creationTimestamp: null
   name: mealie
-  namespace: mealie
+  namespace: mealie-test
 spec:
   ports:
     - name: "9925"

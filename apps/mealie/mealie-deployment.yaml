@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   creationTimestamp: null
   name: mealie
-  namespace: mealie
+  namespace: mealie-test
 spec:
   replicas: 1
   selector:

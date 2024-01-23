@@ -11,8 +11,8 @@ data:
   password: dGVzdHB3
 kind: Secret
 metadata:
-  name: mealie-db-creds
-  namespace: mealie
+  name: mealie-db-creds-test
+  namespace: mealie-test
 type: kubernetes.io/basic-auth
 
 # ---
@@ -39,7 +39,7 @@ apiVersion: postgresql.k8s.enterprisedb.io/v1
 kind: Cluster
 metadata:
   name: mealie-postgres
-  namespace: mealie
+  namespace: mealie-test
 spec:
   description: "Example of cluster"
   imageName: quay.io/enterprisedb/postgresql:16.1
@@ -51,7 +51,7 @@ spec:
       database: mealie
       owner: mealie
       secret:
-        name: mealie-db-creds
+        name: mealie-db-creds-test
     # Alternative bootstrap method: start from a backup
     #recovery:
     #  backup:
