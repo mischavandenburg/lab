@@ -35,6 +35,13 @@ spec:
   triggers:
     - type: postgresql
       metadata:
-        connectionFromEnv: DATABASE_CONN
+        userName: app
+        passwordFromEnv: PG_PASSWORD
+        host: kedapoc-db-rw
+        # host: postgres-svc.namespace.cluster.local #use the cluster-wide namespace as KEDA
+        #lives in a different namespace from your postgres
+        port: "5432"
+        dbName: app
+        sslmode: disable
         query: "SELECT count(*) FROM queue.messages WHERE status = 'new';"
         targetQueryValue: "10"
