@@ -22,5 +22,5 @@ spec:
         - image: httpd
           name: httpd
           env:
-            - name: DATABASE_CONN
-              value: postgresql://app:ohfLnipJ4lgJgTi64NpfTKC21U7SV8FPby2AVtMD1yQYIiMLF2HnZVYdwPJOgHWR@kedapoc-db-rw:5432/app
+            - name: PG_PASSWORD
+              value: ohfLnipJ4lgJgTi64NpfTKC21U7SV8FPby2AVtMD1yQYIiMLF2HnZVYdwPJOgHWR
