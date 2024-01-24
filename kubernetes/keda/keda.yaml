@@ -2,8 +2,9 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: test-scaledobject
+  namespace: kedapoc
   annotations:
-    autoscaling.keda.sh/paused: "true" # Optional. Use to pause autoscaling of objects explicitly
+    # autoscaling.keda.sh/paused: "true" # Optional. Use to pause autoscaling of objects explicitly
 spec:
   scaleTargetRef:
     name: httpd-frontend
