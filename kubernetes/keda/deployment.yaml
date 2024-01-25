@@ -6,7 +6,7 @@ metadata:
     tier: frontend
   name: httpd-frontend
 spec:
-  replicas: 1
+  # replicas: 1
   selector:
     matchLabels:
       app: httpd-frontend
