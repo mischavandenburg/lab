@@ -17,7 +17,7 @@ spec:
       metadata:
         userName: app
         passwordFromEnv: PG_PASSWORD
-        host: kedapoc-db-rw.kedapoc1.svc.cluster.local
+        host: kedapoc-db-rw.kedapoc2.svc.cluster.local
         # host: postgres-svc.namespace.cluster.local #use the cluster-wide namespace as KEDA
         #lives in a different namespace from your postgres
         port: "5432"
