@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: httpd-frontend
+    tier: frontend
+  name: httpd-frontend
+spec:
+  # replicas: 1
+  selector:
+    matchLabels:
+      app: httpd-frontend
+      tier: frontend
+  template:
+    metadata:
+      labels:
+        app: httpd-frontend
+        tier: frontend
+    spec:
+      containers:
+        - image: httpd
+          name: httpd
+          env:
+            - name: PG_PASSWORD
+              value: PHUO4nVZ7K8fT1xy0zAFTRl5f5qXFAX5B9kqAkBm7apTBiFiDWEKsHRQPJeyIylf

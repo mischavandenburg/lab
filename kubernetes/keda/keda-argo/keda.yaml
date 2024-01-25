@@ -1,0 +1,27 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: test-scaledobject
+  annotations:
+    # autoscaling.keda.sh/paused: "true" # Optional. Use to pause autoscaling of objects explicitly
+spec:
+  scaleTargetRef:
+    name: httpd-frontend
+  pollingInterval: 10 # Optional. Default: 30 seconds
+  cooldownPeriod: 30 # Optional. Default: 300 seconds
+  minReplicaCount: 1 # Optional. Default: 0
+  maxReplicaCount: 25 # Optional. Default: 100
+
+  triggers:
+    - type: postgresql
+      metadata:
+        userName: app
+        passwordFromEnv: PG_PASSWORD
+        host: kedapoc-db-rw.kedapoc2.svc.cluster.local
+        # host: postgres-svc.namespace.cluster.local #use the cluster-wide namespace as KEDA
+        #lives in a different namespace from your postgres
+        port: "5432"
+        dbName: app
+        sslmode: disable
+        query: "SELECT count(*) FROM queue.messages WHERE status = 'new';"
+        targetQueryValue: "10"
