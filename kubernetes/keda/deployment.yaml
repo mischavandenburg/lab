@@ -5,7 +5,6 @@ metadata:
     app: httpd-frontend
     tier: frontend
   name: httpd-frontend
-  namespace: kedapoc
 spec:
   replicas: 1
   selector:
@@ -23,4 +22,4 @@ spec:
           name: httpd
           env:
             - name: PG_PASSWORD
-              value: ohfLnipJ4lgJgTi64NpfTKC21U7SV8FPby2AVtMD1yQYIiMLF2HnZVYdwPJOgHWR
+              value: TCFHK8FjQpCQKGeBXwX9zRrb7YCXykB5Xmz0r7sIxxqDaDWUAZuaPj6Ma18L6qpf

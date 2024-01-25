@@ -10,12 +10,15 @@ After creating the cluster, populate the database
 ```sql
 
 CREATE SCHEMA IF NOT EXISTS queue;
-
 CREATE TABLE IF NOT EXISTS queue.messages (id SERIAL PRIMARY KEY, status VARCHAR(50));
+GRANT USAGE ON SCHEMA queue TO app;
+GRANT SELECT ON queue.messages TO app;
+```
 
 
 Now that the tables are created, we can add some data:
 
+```sql
 DO
 $$
 BEGIN
@@ -24,11 +27,14 @@ BEGIN
     END LOOP;
 END
 $$;
+```
 
 To verify the amount of messages in the queue:
 
-SELECT count(*) FROM queue.messages WHERE status = 'new';
+`SELECT count(*) FROM queue.messages WHERE status = 'new';`
 
+To delete all messages:
+`DELETE FROM queue.messages;`
 
 To be able to list the tables with dt, run:
 SET search_path TO queue, public;
@@ -36,7 +42,7 @@ SET search_path TO queue, public;
 Alternatively, use:
 \dt queue.*
 
-To delete all messages:
-DELETE FROM queue.messages;
+
+
 
 ```

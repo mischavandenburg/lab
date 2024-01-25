@@ -2,7 +2,6 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: test-scaledobject
-  namespace: kedapoc
   annotations:
     # autoscaling.keda.sh/paused: "true" # Optional. Use to pause autoscaling of objects explicitly
 spec:
@@ -10,34 +9,15 @@ spec:
     name: httpd-frontend
   pollingInterval: 10 # Optional. Default: 30 seconds
   cooldownPeriod: 30 # Optional. Default: 300 seconds
-  # idleReplicaCount: 0 # Optional. Default: ignored, must be less than minReplicaCount
   minReplicaCount: 1 # Optional. Default: 0
   maxReplicaCount: 15 # Optional. Default: 100
 
-  # The fallback section is optional. It defines a number of replicas to fall back to if a scaler is in an error state.
-
-  # fallback: # Optional. Section to specify fallback options
-  #   failureThreshold: 3 # Mandatory if fallback section is included
-  #   replicas: 6 # Mandatory if fallback section is included
-  #
-  # advanced: # Optional. Section to specify advanced options
-  #   restoreToOriginalReplicaCount: true/false # Optional. Default: false
-  #   horizontalPodAutoscalerConfig: # Optional. Section to specify HPA related options
-  #     name: { name-of-hpa-resource } # Optional. Default: keda-hpa-{scaled-object-name}
-  #     behavior: # Optional. Use to modify HPA's scaling behavior
-  #       scaleDown:
-  #         stabilizationWindowSeconds: 300
-  #         policies:
-  #           - type: Percent
-  #             value: 100
-  #             periodSeconds: 15
-  #
   triggers:
     - type: postgresql
       metadata:
         userName: app
         passwordFromEnv: PG_PASSWORD
-        host: kedapoc-db-rw
+        host: kedapoc-db-rw.kedapoc1.svc.cluster.local
         # host: postgres-svc.namespace.cluster.local #use the cluster-wide namespace as KEDA
         #lives in a different namespace from your postgres
         port: "5432"
