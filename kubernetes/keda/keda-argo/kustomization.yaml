@@ -4,4 +4,4 @@ namespace: kedapoc2
 resources:
   - cluster.yaml
   - deployment.yaml
-  # - keda.yaml
+  - keda.yaml
