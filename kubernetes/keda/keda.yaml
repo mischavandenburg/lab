@@ -10,7 +10,7 @@ spec:
   pollingInterval: 10 # Optional. Default: 30 seconds
   cooldownPeriod: 30 # Optional. Default: 300 seconds
   minReplicaCount: 1 # Optional. Default: 0
-  maxReplicaCount: 15 # Optional. Default: 100
+  maxReplicaCount: 25 # Optional. Default: 100
 
   triggers:
     - type: postgresql
