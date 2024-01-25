@@ -22,4 +22,4 @@ spec:
           name: httpd
           env:
             - name: PG_PASSWORD
-              value: PHUO4nVZ7K8fT1xy0zAFTRl5f5qXFAX5B9kqAkBm7apTBiFiDWEKsHRQPJeyIylf
+              value: Sp7UHtya76X2IHiAdRlmLFz5TrPVULX4vut9Fmn66b3cDQTVAesqQZLkpWOxbDhj
