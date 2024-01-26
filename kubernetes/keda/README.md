@@ -1,5 +1,7 @@
 This is to set up a PoC with KEDA based on PostgreSQL queries.
 
+
+
 Install EDB
 
 kubectl apply -f \

@@ -24,4 +24,4 @@ spec:
         dbName: app
         sslmode: disable
         query: "SELECT count(*) FROM queue.messages WHERE status = 'new';"
-        targetQueryValue: "10"
+        targetQueryValue: "1"
