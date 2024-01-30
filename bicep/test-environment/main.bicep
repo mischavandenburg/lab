@@ -58,9 +58,10 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2023-03-02-previ
         maxCount: maxCount
       }
     ]
-  }
   workloadAutoScalerProfile: {
       keda: {
         enabled: enableKEDA
       }
+  }
+  }
 }
