@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: kedapoc2
+  name: kedapoc
+  namespace: kedapoc
 ---
 apiVersion: postgresql.k8s.enterprisedb.io/v1
-# apiVersion: postgresql.cnpg.io/v1
 kind: Cluster
 metadata:
-  name: kedapoc-db
+  name: kedapoc-database
 spec:
   description: Postgres cluster for the linkding application
   imageName: quay.io/enterprisedb/postgresql:16.1

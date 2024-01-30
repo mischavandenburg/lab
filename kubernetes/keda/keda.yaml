@@ -2,6 +2,7 @@ apiVersion: keda.sh/v1alpha1
 kind: ScaledObject
 metadata:
   name: test-scaledobject
+  namespace: kedapoc
   annotations:
     # autoscaling.keda.sh/paused: "true" # Optional. Use to pause autoscaling of objects explicitly
 spec:
@@ -24,4 +25,4 @@ spec:
         dbName: app
         sslmode: disable
         query: "SELECT count(*) FROM queue.messages WHERE status = 'new';"
-        targetQueryValue: "1"
+        targetQueryValue: "0"

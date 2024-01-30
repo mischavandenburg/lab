@@ -5,8 +5,8 @@ metadata:
     app: httpd-frontend
     tier: frontend
   name: httpd-frontend
+  namespace: kedapoc
 spec:
-  # replicas: 1
   selector:
     matchLabels:
       app: httpd-frontend
