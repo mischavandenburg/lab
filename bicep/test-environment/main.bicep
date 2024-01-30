@@ -15,6 +15,9 @@ param enableRBAC bool = true
 @description('Enable auto scaling')
 param autoScale bool = true
 
+@description('Enable KEDA')
+param enableKEDA bool = false
+
 @description('minimum number of nodes')
 param minCount int = 1
 
@@ -56,4 +59,8 @@ resource aksCluster 'Microsoft.ContainerService/managedClusters@2023-03-02-previ
       }
     ]
   }
+  workloadAutoScalerProfile: {
+      keda: {
+        enabled: enableKEDA
+      }
 }
