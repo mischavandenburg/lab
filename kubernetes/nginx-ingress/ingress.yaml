@@ -1,0 +1,24 @@
+# this is meant to fail a certificate for cert-manager
+
+kind: Ingress
+metadata:
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt-prodmischa
+  name: demo
+spec:
+  ingressClassName: nginx
+  rules:
+    - host: test.rancher.vanoord.com
+      http:
+        paths:
+          - backend:
+              service:
+                name: demo
+                port:
+                  number: 80
+            path: /
+            pathType: Prefix
+  tls:
+    - hosts:
+        - home-test.mischavandenburg.net
+      secretName: homarr-ingress-staging
