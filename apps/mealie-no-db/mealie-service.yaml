@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: null
+  name: mealie
+  namespace: mealie-test
+spec:
+  ports:
+    - name: "9925"
+      port: 9925
+      targetPort: 9000
+  selector:
+    app: mealie
+status:
+  loadBalancer: {}

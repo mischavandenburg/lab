@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: homarr-loadbalancer
+spec:
+  ports:
+    - port: 7575
+  selector:
+    app: homarr
+  type: LoadBalancer
