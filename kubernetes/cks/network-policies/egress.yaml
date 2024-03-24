@@ -1,0 +1,18 @@
+kind: NetworkPolicy
+metadata:
+  name: example
+  namespace: default
+
+spec:
+  podSelector:
+    matchLabels:
+      id: frontend
+
+  policyTypes:
+    - Egress
+
+# This is already a valid policy.
+# This will deny all outgoing traffic from pod with the label
+# id=frontend
+    #
+    # So in this case, because NO egress rules  is defined, no egress traffic is allowed either.
