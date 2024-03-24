@@ -1,8 +1,8 @@
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: default-deny
-  namespace: default
+  name: cassandra-deny
+  namespace: cassandra
 
 spec:
   podSelector: {} # target all pods
@@ -10,10 +10,9 @@ spec:
     - Ingress
     - Egress
   egress:
-  - to:
-    ports:
-      - port: 53
-        protocol: TCP
-      - port: 53
-        protocol: UDP
-
+    - to:
+      ports:
+        - port: 53
+          protocol: TCP
+        - port: 53
+          protocol: UDP
