@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: zk
+  name: zk-lb
+  namespace: zk
+spec:
+  ports:
+    - port: 3009
+      protocol: TCP
+      targetPort: 3009
+  selector:
+    app: zk
+  type: LoadBalancer

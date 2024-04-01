@@ -1,0 +1,34 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zk
+  name: zk
+  namespace: zk
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zk
+  template:
+    metadata:
+      labels:
+        app: zk
+    spec:
+      containers:
+        - image: zettelkasten-server:0.2
+          name: zettelkasten-server
+          imagePullPolicy: Never
+
+          ports:
+            - containerPort: 3009
+              protocol: TCP
+          env:
+            - name: DB_HOST
+              value: zk-db-rw.zk.svc.cluster.local
+            - name: DB_USER
+              value: app
+            - name: DB_PASSWORD
+              value: NItqymm9B2OsSRChMFuWCT8Vop0yS67mVQN5XJ48NzxidoIkOTXPBp7reYFHApNw
+            - name: DB_NAME
+              value: app
