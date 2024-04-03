@@ -1,0 +1,37 @@
+#!/bin/bash
+
+# Script to create an Service Principal and output the values for use with Azure Verified Modules
+
+# Variables - Fill in these values as per your Azure environment
+subscriptionId=""
+parentManagementGroupId="" # Optional, leave as empty string if not using
+
+# Login to Azure (Ensure you're logged in to the correct account and subscription)
+# az login
+az account set --subscription "$subscriptionId"
+
+# Create Service Principal with Contributor and User Access Administrator roles
+spName="avm-bicep"
+spPassword=$(az ad sp create-for-rbac --name $spName --role Contributor --scopes /subscriptions/$subscriptionId --query password --output tsv)
+spAppId=$(az ad sp list --display-name $spName --query [].appId --output tsv)
+spObjectId=$(az ad sp show --id $spAppId --query objectId --output tsv)
+tenantId=$(az account show --query tenantId --output tsv)
+
+# Assign User Access Administrator role at the subscription or management group level
+if [[ -z "$parentManagementGroupId" ]]; then
+	az role assignment create --assignee $spAppId --role "User Access Administrator" --scope /subscriptions/$subscriptionId
+else
+	az role assignment create --assignee $spAppId --role "User Access Administrator" --scope /providers/Microsoft.Management/managementGroups/$parentManagementGroupId
+fi
+
+# Output the necessary details
+echo "Application (Client) ID: $spAppId"
+echo "Service Principal Object ID: $spObjectId"
+echo "Service Principal Secret (password): $spPassword"
+echo "Tenant ID: $tenantId"
+echo "Subscription ID: $subscriptionId"
+if [[ -n "$parentManagementGroupId" ]]; then
+	echo "Parent Management Group ID: $parentManagementGroupId"
+fi
+
+# Note: Store the Service Principal Secret securely. It won't be displayed again.
