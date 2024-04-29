@@ -1,0 +1,19 @@
+# values for the kube-prometheus-stack helm chart
+# this enables podmonitor scraping from selected namespaces
+# and adds a cluster label which is missing on Rancher Desktop
+
+prometheus:
+  prometheusSpec:
+    additionalScrapeConfigs:
+      - job_name: "kube-state-metrics"
+        static_configs:
+          - targets: ["prometheus-stack-kube-state-metrics.monitoring.svc:8080"]
+            labels:
+              cluster: "RancherMischa"
+    podMonitorNamespaceSelector:
+      matchLabels:
+        podmonitorscrape: "true"
+    podMonitorSelectorNilUsesHelmValues: false
+    probeSelectorNilUsesHelmValues: false
+    ruleSelectorNilUsesHelmValues: false
+    serviceMonitorSelectorNilUsesHelmValues: false
