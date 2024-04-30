@@ -16,5 +16,5 @@ spec:
         tier: backend
     spec:
       containers:
-        - image: ghcr.io/mytest/httpd:v0.0.0
+        - image: ghcr.io/mytest/httpd:v0.0.1
           name: httpd
