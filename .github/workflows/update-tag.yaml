@@ -16,7 +16,7 @@ jobs:
         uses: mikefarah/yq@master
         with:
           cmd: |
-            yq eval ".spec.template.spec.containers[] | select(.name == 'httpd').image = 'ghcr.io/mytest/httpd:v0.0.1'" -i ./kubernetes/deployments/test.yaml
+            yq eval '.spec.template.spec.containers[0].image = "ghcr.io/mytest/httpd:v0.0.1"' -i ./kubernetes/deployments/test.yaml
 
       - name: push
         uses: actions-x/commit@v6
