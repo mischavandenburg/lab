@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: mailslurper
+  name: mailslurper
+  namespace: ory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mailslurper
+  template:
+    metadata:
+      labels:
+        app: mailslurper
+    spec:
+      containers:
+        - image: oryd/mailslurper:latest-smtps
+          name: mailslurper
+          ports:
+            - containerPort: 4436
+            - containerPort: 4437
+              protocol: TCP

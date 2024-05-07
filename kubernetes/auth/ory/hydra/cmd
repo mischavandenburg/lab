@@ -1,0 +1,14 @@
+helm install \
+    --set 'hydra.config.secrets.system={$(LC_ALL=C tr -dc 'A-Za-z0-9' < /dev/urandom | head -c 32 | base64)}' \
+    --set 'hydra.config.dsn=postgres://app:9RXphWTqdfXxfdmjNt5kgbJFpOtC06oViL8tWe1cznHmAdrFrGj7IN5oVVB09TiW@kratos-db-rw:5432/hydra' \
+    --set 'hydra.config.urls.self.issuer=https://public.hydra.localhost/' \
+    --set 'hydra.config.urls.login=http://example-idp.localhost/login' \
+    --set 'hydra.config.urls.consent=http://example-idp.localhost/consent' \
+    --set 'hydra.config.urls.logout=http://example-idp.localhost/logout' \
+    --set 'hydra.automigration.enabled=true' \
+    --set 'ingress.public.enabled=true' \
+    --set 'ingress.public.className=traefik' \
+    --set 'ingress.admin.enabled=true' \
+    --set 'hydra.dangerousForceHttp=true' \
+    hydra-example \
+    ory/hydra

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mailslurper
+  namespace: ory
+spec:
+  ports:
+    - port: 4436
+      name: one
+    - port: 4437
+      name: two
+  selector:
+    app: mailslurper
+  type: ClusterIP

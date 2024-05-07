@@ -1,0 +1,67 @@
+hydra:
+  config:
+    # secrets:
+    #   system: "generate-this-securely" # Placeholder: Replace with a securely generated value
+    dsn: "postgres://app:9RXphWTqdfXxfdmjNt5kgbJFpOtC06oViL8tWe1cznHmAdrFrGj7IN5oVVB09TiW@kratos-db-rw:5432/hydra"
+    # urls:
+    #   self:
+    #     issuer: "https://public.hydra.localhost/"
+    #   login: "http://example-idp.localhost/login"
+    #   consent: "http://example-idp.localhost/consent"
+    #   logout: "http://example-idp.localhost/logout"
+  automigration:
+    enabled: true
+  dangerousForceHttp: true
+
+ingress:
+  public:
+    enabled: true
+    className: "traefik"
+  admin:
+    enabled: true
+
+deployment:
+  extraEnv:
+    - name: STRATEGIES_ACCESS_TOKEN
+      value: "jwt"
+    # - name: OAUTH2_EXPOSE_INTERNAL_ERRORS
+    #   value: "${LOG_LEAK_SENSITIVE_VALUES}"
+    # - name: LOG_LEAK_SENSITIVE_VALUES
+    #   value: "${LOG_LEAK_SENSITIVE_VALUES}"
+    # - name: TTL_ACCESS_TOKEN
+    #   value: "${TTL_ACCESS_TOKEN}"
+    # - name: TTL_ID_TOKEN
+    #   value: "${TTL_ACCESS_TOKEN}"
+    # - name: TTL_REFRESH_TOKEN
+    # value: "${TTL_REFRESH_TOKEN}"
+    #
+
+    # SOFI HOSTNAME = test.mischa.dk
+    # SOFI PORT = 443
+
+    - name: WEBFINGER_OIDC_DISCOVERY_AUTH_URL
+      value: "https://test.mischa.dk:443/oauth2/auth"
+    - name: WEBFINGER_OIDC_DISCOVERY_TOKEN_URL
+      value: "https://test.mischa.dk:443/oauth2/token"
+    - name: WEBFINGER_OIDC_DISCOVERY_JWKS_URL
+      value: "https://test.mischa.dk:443/.well-known/jwks.json"
+    - name: WEBFINGER_OIDC_DISCOVERY_USERINFO_URL
+      value: "https://test.mischa.dk:443/.well-known/userinfo"
+    - name: URLS_SELF_ISSUER
+      value: "https://test.mischa.dk:443"
+    - name: URLS_SELF_PUBLIC
+      value: "https://test.mischa.dk:443"
+    - name: URLS_CONSENT
+      value: "https://test.mischa.dk:443/ss/auth/hydra/consent"
+    - name: URLS_LOGIN
+      value: "https://test.mischa.dk:443/ss/auth/hydra/login"
+    - name: URLS_LOGOUT
+      value: "https://test.mischa.dk:443/ss/logout"
+    - name: SECRETS_SYSTEM
+      value: sr3vTbbbF61d_rr2138f4f43
+    # - name: DSN
+    #   value: "postgres://${PG_USER}:${PG_SECRET}@postgresd:5432/hydra?sslmode=${SSL_MODE}"
+    - name: SQA_OPT_OUT
+      value: "true"
+    # - name: SERVE_TLS_ALLOW_TERMINATION_FROM
+    #   value: "${SOFI_SUBNET},127.0.0.1/32"

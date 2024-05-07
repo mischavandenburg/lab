@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: self-service-ui
+  name: self-service-ui
+  namespace: ory
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: self-service-ui
+  template:
+    metadata:
+      labels:
+        app: self-service-ui
+    spec:
+      containers:
+        - image: sekvensanalyseplatform/auth-selfservice-ui:431
+          name: auth-selfservice-ui
+          ports:
+            - containerPort: 3000
+          env:
+            - name: HYDRA_ADMIN_URL
+              value: "http://hydra-admin:4445"
+            - name: HYDRA_BROWSER_URL
+              value: "https://:443"
+            - name: KRATOS_BROWSER_URL
+              value: "https://test.mischa.dk:443/.ory/kratos/public"
+            - name: KRATOS_PUBLIC_URL
+              value: "http://kratos:4433/"
+            - name: KRATOS_ADMIN_URL
+              value: "http://kratos:4434/"
+            - name: SECURITY_MODE
+              value: "standalone"
+            - name: PROJECT_NAME
+              value: "SOFI"
+            - name: BASE_URL
+              value: "/ss/"
+status: {}

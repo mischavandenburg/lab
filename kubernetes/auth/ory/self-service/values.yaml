@@ -1,0 +1,11 @@
+kratosPublicUrl: "http://kratos-public"
+kratosBrowserUrl: "http://127.0.0.1:4433/"
+
+deployment:
+  extraEnv:
+    - name: COOKIE_SECRET
+      value: ab318v45
+    - name: CSRF_COOKIE_NAME
+      value: ory_csrf_ui
+    - name: CSRF_COOKIE_SECRET
+      value: mischaisthebestlol
