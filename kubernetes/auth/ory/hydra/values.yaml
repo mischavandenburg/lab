@@ -40,23 +40,23 @@ deployment:
     # SOFI PORT = 443
 
     - name: WEBFINGER_OIDC_DISCOVERY_AUTH_URL
-      value: "https://test.mischa.dk:443/oauth2/auth"
+      value: "https://test.mischa.dk/oauth2/auth"
     - name: WEBFINGER_OIDC_DISCOVERY_TOKEN_URL
-      value: "https://test.mischa.dk:443/oauth2/token"
+      value: "https://test.mischa.dk/oauth2/token"
     - name: WEBFINGER_OIDC_DISCOVERY_JWKS_URL
-      value: "https://test.mischa.dk:443/.well-known/jwks.json"
+      value: "https://test.mischa.dk/.well-known/jwks.json"
     - name: WEBFINGER_OIDC_DISCOVERY_USERINFO_URL
-      value: "https://test.mischa.dk:443/.well-known/userinfo"
+      value: "https://test.mischa.dk/.well-known/userinfo"
     - name: URLS_SELF_ISSUER
-      value: "https://test.mischa.dk:443"
+      value: "https://test.mischa.dk"
     - name: URLS_SELF_PUBLIC
-      value: "https://test.mischa.dk:443"
+      value: "https://test.mischa.dk"
     - name: URLS_CONSENT
-      value: "https://test.mischa.dk:443/ss/auth/hydra/consent"
+      value: "https://test.mischa.dk/ss/auth/hydra/consent"
     - name: URLS_LOGIN
-      value: "https://test.mischa.dk:443/ss/auth/hydra/login"
+      value: "https://test.mischa.dk/ss/auth/hydra/login"
     - name: URLS_LOGOUT
-      value: "https://test.mischa.dk:443/ss/logout"
+      value: "https://test.mischa.dk/ss/logout"
     - name: SECRETS_SYSTEM
       value: sr3vTbbbF61d_rr2138f4f43
     # - name: DSN
