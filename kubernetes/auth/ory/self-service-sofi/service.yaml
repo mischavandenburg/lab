@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: Service
+metadata:
+  creationTimestamp: "2024-05-07T13:05:16Z"
+  labels:
+    app: self-service-ui
+  name: self-service-ui
+  namespace: ory
+  resourceVersion: "168731"
+  uid: fb87cb2f-2707-4170-b63d-8c95c6a397c1
+spec:
+  clusterIP: 10.43.45.200
+  clusterIPs:
+  - 10.43.45.200
+  internalTrafficPolicy: Cluster
+  ipFamilies:
+  - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+  - port: 3000
+    protocol: TCP
+    targetPort: 3000
+  selector:
+    app: self-service-ui
+  sessionAffinity: None
+  type: ClusterIP
+status:
+  loadBalancer: {}

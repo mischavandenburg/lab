@@ -14,11 +14,44 @@ hydra:
   dangerousForceHttp: true
 
 ingress:
+  # -- Configure ingress for the proxy port.
   public:
+    # -- En-/Disable the proxy ingress.
     enabled: true
     className: "traefik"
+    annotations: {}
+    #     kubernetes.io/ingress.class: nginx
+    #     kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: test.mischa.dk
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+  #    tls: []
+  #        hosts:
+  #          - proxy.hydra.local
+  #      - secretName: hydra-proxy-example-tls
+
   admin:
+    # -- En-/Disable the api ingress.
     enabled: true
+    className: traefik
+    annotations: {}
+    #      If you do want to specify annotations, uncomment the following
+    #      lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
+    #      kubernetes.io/ingress.class: nginx
+    #      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: test.mischa.dk
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+#    tls: []
+#      hosts:
+#        - api.hydra.local
+#      - secretName: hydra-api-example-tls
+
+## -- Configure ORY Hydra itself
 
 deployment:
   extraEnv:

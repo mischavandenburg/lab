@@ -22,15 +22,15 @@ spec:
             - containerPort: 3000
           env:
             - name: HYDRA_ADMIN_URL
-              value: "http://hydra-admin:4445"
+              value: "http://hydra-admin"
             - name: HYDRA_BROWSER_URL
-              value: "https://:443"
+              value: http://test.mischa.dk
             - name: KRATOS_BROWSER_URL
-              value: "https://test.mischa.dk:443/.ory/kratos/public"
+              value: "https://test.mischa.dk/.ory/kratos/public"
             - name: KRATOS_PUBLIC_URL
-              value: "http://kratos:4433/"
+              value: "http://kratos-public/"
             - name: KRATOS_ADMIN_URL
-              value: "http://kratos:4434/"
+              value: "http://kratos-admin"
             - name: SECURITY_MODE
               value: "standalone"
             - name: PROJECT_NAME

@@ -1,5 +1,5 @@
-kratosPublicUrl: "http://kratos-public"
-kratosBrowserUrl: "http://127.0.0.1:4433/"
+kratosPublicUrl: "http://test.mischa.dk"
+kratosBrowserUrl: "http://test.mischa.dk:4433/"
 
 deployment:
   extraEnv:
