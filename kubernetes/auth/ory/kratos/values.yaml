@@ -1,6 +1,7 @@
 kratos:
+  development: true
   config:
-    dsn: postgres://app:9RXphWTqdfXxfdmjNt5kgbJFpOtC06oViL8tWe1cznHmAdrFrGj7IN5oVVB09TiW@kratos-db-rw:5432/app
+    dsn: postgres://app:n4QTdLq1zJWCQklog3vzOHh9qBnK9efUsO1cOiZLSct6VUwDGgOKolf66Qt3hWZY@kratos-db-rw:5432/app
     # secrets:
     #   default:
     #     - dolore occaecat nostrud Ut
@@ -13,10 +14,67 @@ kratos:
     courier:
       smtp:
         connection_uri: smtps://test:test@mailslurper:1025/?skip_ssl_verify=true
-    # selfservice:
-    #   default_browser_return_url: http://127.0.0.1:4455/
+
+    serve:
+      public:
+        base_url: http://kratos.public.local.com
+        cors:
+          enabled: true
+      admin:
+        base_url: http://kratos.admin.local.com
+
+    selfservice:
+      default_browser_return_url: http://ui.local.com
+      allowed_return_urls:
+        - http://ui.local.com
+
+      methods:
+        password:
+          enabled: true
+          config:
+            min_password_length: 6
+            identifier_similarity_check_enabled: false
+            haveibeenpwned_enabled: false
+
+      flows:
+        error:
+          ui_url: http://ui.local.com/error
+
+        settings:
+          ui_url: http://ui.local.com/settings
+          privileged_session_max_age: 15m
+          required_aal: highest_available
+
+        logout:
+          after:
+            default_browser_return_url: http://ui.local.com/login
+
+        login:
+          ui_url: http://ui.local.com/login
+
+        registration:
+          ui_url: http://ui.local.com/registration
+          after:
+            password:
+              hooks:
+                - hook: session
+
+    log:
+      format: text
+      leak_sensitive_values: true
+
+    secrets:
+      cookie:
+        - PLEASE-CHANGE-ME-I-AM-VERY-INSECURE
+      cipher:
+        - 32-LONG-SECRET-NOT-SECURE-AT-ALL
+
+    oauth2_provider:
+      url: http://hydra.admin.local.com
+
   automigration:
     enabled: true
+
   identitySchemas:
     "identity.default.schema.json": |
       {
@@ -63,7 +121,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     hosts:
-      - host: test.mischa.dk
+      - host: kratos.admin.local.com
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -78,7 +136,7 @@ ingress:
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
     hosts:
-      - host: test.mischa.dk
+      - host: kratos.public.local.com
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -86,36 +144,35 @@ ingress:
     #  - secretName: chart-example-tls
     #    hosts:
     #      - chart-example.local
-
 ## -- Application specific config
 
-deployment:
-  extraEnv:
-    # - name: DSN
-    #   value: "postgres://${PG_USER}:${PG_SECRET}@postgresd:5432/kratos?sslmode=${SSL_MODE}&max_conns=20&max_idle_conns=4"
-    - name: SERVE_PUBLIC_BASE_URL
-      value: "https://test.mischa.dk/.ory/kratos/public/"
-    - name: SELFSERVICE_WHITELISTED_RETURN_URLS
-      value: "https://test.mischa.dk/ss/auth/hydra/login,https://test.mischa.dk/,https://test.mischa.dk/"
-    - name: SELFSERVICE_DEFAULT_BROWSER_RETURN_URL
-      value: "https://test.mischa.dk"
-    - name: SELFSERVICE_FLOWS_SETTINGS_UI_URL
-      value: "https://test.mischa.dk/ss/settings"
-    - name: SELFSERVICE_FLOWS_VERIFICATION_UI_URL
-      value: "https://test.mischa.dk/ss/verify"
-    - name: SELFSERVICE_FLOWS_VERIFICATION_AFTER_DEFAULT_BROWSER_RETURN_URL
-      value: "https://test.mischa.dk"
-    - name: SELFSERVICE_FLOWS_RECOVERY_UI_URL
-      value: "https://test.mischa.dk/ss/recovery"
-    - name: SELFSERVICE_FLOWS_LOGOUT_UI_URL
-      value: "https://test.mischa.dk/ss/logout"
-    - name: SELFSERVICE_FLOWS_LOGIN_UI_URL
-      value: "https://test.mischa.dk/ss/auth/login"
-    - name: SELFSERVICE_FLOWS_REGISTRATION_UI_URL
-      value: "https://test.mischa.dk/ss/auth/registration"
-    - name: SELFSERVICE_FLOWS_ERROR_UI_URL
-      value: "https://test.mischa.dk/ss/error"
-    # - name: COURIER_SMTP_CONNECTION_URI
-    #   value: "${COURIER_SMTP_CONNECTION_URI}"
-    - name: SQA_OPT_OUT
-      value: "true"
+# deployment:
+#   extraEnv:
+#     # - name: DSN
+#     #   value: "postgres://${PG_USER}:${PG_SECRET}@postgresd:5432/kratos?sslmode=${SSL_MODE}&max_conns=20&max_idle_conns=4"
+#     - name: SERVE_PUBLIC_BASE_URL
+#       value: "https://test.mischa.dk/.ory/kratos/public/"
+#     - name: SELFSERVICE_WHITELISTED_RETURN_URLS
+#       value: "https://test.mischa.dk/ss/auth/hydra/login,https://test.mischa.dk/,https://test.mischa.dk/"
+#     - name: SELFSERVICE_DEFAULT_BROWSER_RETURN_URL
+#       value: "https://test.mischa.dk"
+#     - name: SELFSERVICE_FLOWS_SETTINGS_UI_URL
+#       value: "https://test.mischa.dk/ss/settings"
+#     - name: SELFSERVICE_FLOWS_VERIFICATION_UI_URL
+#       value: "https://test.mischa.dk/ss/verify"
+#     - name: SELFSERVICE_FLOWS_VERIFICATION_AFTER_DEFAULT_BROWSER_RETURN_URL
+#       value: "https://test.mischa.dk"
+#     - name: SELFSERVICE_FLOWS_RECOVERY_UI_URL
+#       value: "https://test.mischa.dk/ss/recovery"
+#     - name: SELFSERVICE_FLOWS_LOGOUT_UI_URL
+#       value: "https://test.mischa.dk/ss/logout"
+#     - name: SELFSERVICE_FLOWS_LOGIN_UI_URL
+#       value: "https://test.mischa.dk/ss/auth/login"
+#     - name: SELFSERVICE_FLOWS_REGISTRATION_UI_URL
+#       value: "https://test.mischa.dk/ss/auth/registration"
+#     - name: SELFSERVICE_FLOWS_ERROR_UI_URL
+#       value: "https://test.mischa.dk/ss/error"
+#     # - name: COURIER_SMTP_CONNECTION_URI
+#     #   value: "${COURIER_SMTP_CONNECTION_URI}"
+#     - name: SQA_OPT_OUT
+#       value: "true"

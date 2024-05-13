@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: web-app
+  namespace: ory
+spec:
+  ports:
+    - port: 3333
+      name: one
+  selector:
+    app: web-app
+  type: ClusterIP

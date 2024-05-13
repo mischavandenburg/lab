@@ -1,11 +1,28 @@
-kratosPublicUrl: "http://test.mischa.dk"
-kratosBrowserUrl: "http://test.mischa.dk:4433/"
+kratosPublicUrl: http://kratos.public.local.com/
+kratosAdminUrl: http://kratos.admin.local.com/
+kratosBrowserUrl: http://kratos.public.local.com/
+
+# service:
+#   port: "4455"
+
+ingress:
+  enabled: true
+  className: "traefik"
+  hosts:
+    - host: ui.local.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
 
 deployment:
   extraEnv:
-    - name: COOKIE_SECRET
-      value: ab318v45
+    # - name: COOKIE_SECRET
+    #   value: ab318v45
     - name: CSRF_COOKIE_NAME
-      value: ory_csrf_ui
+      value: cookie_name
     - name: CSRF_COOKIE_SECRET
-      value: mischaisthebestlol
+      value: changeme
+    - name: DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES
+      value: "true"
+    - name: HYDRA_ADMIN_URL
+      value: http://hydra.admin.local.com

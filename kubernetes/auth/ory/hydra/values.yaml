@@ -1,14 +1,39 @@
 hydra:
+  dev: true
   config:
     # secrets:
     #   system: "generate-this-securely" # Placeholder: Replace with a securely generated value
-    dsn: "postgres://app:9RXphWTqdfXxfdmjNt5kgbJFpOtC06oViL8tWe1cznHmAdrFrGj7IN5oVVB09TiW@kratos-db-rw:5432/hydra"
-    # urls:
-    #   self:
-    #     issuer: "https://public.hydra.localhost/"
-    #   login: "http://example-idp.localhost/login"
-    #   consent: "http://example-idp.localhost/consent"
-    #   logout: "http://example-idp.localhost/logout"
+    dsn: "postgres://app:n4QTdLq1zJWCQklog3vzOHh9qBnK9efUsO1cOiZLSct6VUwDGgOKolf66Qt3hWZY@kratos-db-rw:5432/hydra"
+    serve:
+      cookies:
+        same_site_mode: Lax
+
+    urls:
+      self:
+        issuer: http://hydra.public.local.com
+      consent: http://ui.local.com/consent
+      login: http://ui.local.com/login
+      logout: http://ui.local.com/logout
+      identity_provider:
+        publicUrl: http://kratos.public.local.com
+        url: http://kratos.admin.local.com
+
+    secrets:
+      system:
+        - youReallyNeedToChangeThis
+
+    oidc:
+      subject_identifiers:
+        supported_types:
+          - pairwise
+          - public
+        pairwise:
+          salt: youReallyNeedToChangeThis
+
+    log:
+      leak_sensitive_values: true
+      level: debug
+
   automigration:
     enabled: true
   dangerousForceHttp: true
@@ -23,7 +48,7 @@ ingress:
     #     kubernetes.io/ingress.class: nginx
     #     kubernetes.io/tls-acme: "true"
     hosts:
-      - host: test.mischa.dk
+      - host: hydra.public.local.com
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -42,7 +67,7 @@ ingress:
     #      kubernetes.io/ingress.class: nginx
     #      kubernetes.io/tls-acme: "true"
     hosts:
-      - host: test.mischa.dk
+      - host: hydra.admin.local.com
         paths:
           - path: /
             pathType: ImplementationSpecific
@@ -53,48 +78,48 @@ ingress:
 
 ## -- Configure ORY Hydra itself
 
-deployment:
-  extraEnv:
-    - name: STRATEGIES_ACCESS_TOKEN
-      value: "jwt"
-    # - name: OAUTH2_EXPOSE_INTERNAL_ERRORS
-    #   value: "${LOG_LEAK_SENSITIVE_VALUES}"
-    # - name: LOG_LEAK_SENSITIVE_VALUES
-    #   value: "${LOG_LEAK_SENSITIVE_VALUES}"
-    # - name: TTL_ACCESS_TOKEN
-    #   value: "${TTL_ACCESS_TOKEN}"
-    # - name: TTL_ID_TOKEN
-    #   value: "${TTL_ACCESS_TOKEN}"
-    # - name: TTL_REFRESH_TOKEN
-    # value: "${TTL_REFRESH_TOKEN}"
-    #
-
-    # SOFI HOSTNAME = test.mischa.dk
-    # SOFI PORT = 443
-
-    - name: WEBFINGER_OIDC_DISCOVERY_AUTH_URL
-      value: "https://test.mischa.dk/oauth2/auth"
-    - name: WEBFINGER_OIDC_DISCOVERY_TOKEN_URL
-      value: "https://test.mischa.dk/oauth2/token"
-    - name: WEBFINGER_OIDC_DISCOVERY_JWKS_URL
-      value: "https://test.mischa.dk/.well-known/jwks.json"
-    - name: WEBFINGER_OIDC_DISCOVERY_USERINFO_URL
-      value: "https://test.mischa.dk/.well-known/userinfo"
-    - name: URLS_SELF_ISSUER
-      value: "https://test.mischa.dk"
-    - name: URLS_SELF_PUBLIC
-      value: "https://test.mischa.dk"
-    - name: URLS_CONSENT
-      value: "https://test.mischa.dk/ss/auth/hydra/consent"
-    - name: URLS_LOGIN
-      value: "https://test.mischa.dk/ss/auth/hydra/login"
-    - name: URLS_LOGOUT
-      value: "https://test.mischa.dk/ss/logout"
-    - name: SECRETS_SYSTEM
-      value: sr3vTbbbF61d_rr2138f4f43
-    # - name: DSN
-    #   value: "postgres://${PG_USER}:${PG_SECRET}@postgresd:5432/hydra?sslmode=${SSL_MODE}"
-    - name: SQA_OPT_OUT
-      value: "true"
-    # - name: SERVE_TLS_ALLOW_TERMINATION_FROM
-    #   value: "${SOFI_SUBNET},127.0.0.1/32"
+# deployment:
+#   extraEnv:
+#     - name: STRATEGIES_ACCESS_TOKEN
+#       value: "jwt"
+#     # - name: OAUTH2_EXPOSE_INTERNAL_ERRORS
+#     #   value: "${LOG_LEAK_SENSITIVE_VALUES}"
+#     # - name: LOG_LEAK_SENSITIVE_VALUES
+#     #   value: "${LOG_LEAK_SENSITIVE_VALUES}"
+#     # - name: TTL_ACCESS_TOKEN
+#     #   value: "${TTL_ACCESS_TOKEN}"
+#     # - name: TTL_ID_TOKEN
+#     #   value: "${TTL_ACCESS_TOKEN}"
+#     # - name: TTL_REFRESH_TOKEN
+#     # value: "${TTL_REFRESH_TOKEN}"
+#     #
+#
+#     # SOFI HOSTNAME = test.mischa.dk
+#     # SOFI PORT = 443
+#
+#     - name: WEBFINGER_OIDC_DISCOVERY_AUTH_URL
+#       value: "https://test.mischa.dk/oauth2/auth"
+#     - name: WEBFINGER_OIDC_DISCOVERY_TOKEN_URL
+#       value: "https://test.mischa.dk/oauth2/token"
+#     - name: WEBFINGER_OIDC_DISCOVERY_JWKS_URL
+#       value: "https://test.mischa.dk/.well-known/jwks.json"
+#     - name: WEBFINGER_OIDC_DISCOVERY_USERINFO_URL
+#       value: "https://test.mischa.dk/.well-known/userinfo"
+#     - name: URLS_SELF_ISSUER
+#       value: "https://test.mischa.dk"
+#     - name: URLS_SELF_PUBLIC
+#       value: "https://test.mischa.dk"
+#     - name: URLS_CONSENT
+#       value: "https://test.mischa.dk/ss/auth/hydra/consent"
+#     - name: URLS_LOGIN
+#       value: "https://test.mischa.dk/ss/auth/hydra/login"
+#     - name: URLS_LOGOUT
+#       value: "https://test.mischa.dk/ss/logout"
+#     - name: SECRETS_SYSTEM
+#       value: sr3vTbbbF61d_rr2138f4f43
+#     # - name: DSN
+#     #   value: "postgres://${PG_USER}:${PG_SECRET}@postgresd:5432/hydra?sslmode=${SSL_MODE}"
+#     - name: SQA_OPT_OUT
+#       value: "true"
+#     # - name: SERVE_TLS_ALLOW_TERMINATION_FROM
+#     #   value: "${SOFI_SUBNET},127.0.0.1/32"
