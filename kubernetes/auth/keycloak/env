@@ -1,0 +1,8 @@
+const KEYCLOAK_CLIENT_ID = "nextauth";
+const KEYCLOAK_CLIENT_SECRET = "EwPJYw5sC3nwWQMYR7IVhR81VodiXSIh";
+// const KEYCLOAK_URL = "http://localhost:8080/auth";
+const KEYCLOAK_URL = "http://localhost:8080";
+const KEYCLOAK_REALM = "mischa";
+
+const KEYCLOAK_ISSUER = `${KEYCLOAK_URL}/realms/${KEYCLOAK_REALM}`;
+
