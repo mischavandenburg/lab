@@ -18,15 +18,17 @@ kratos:
     serve:
       public:
         base_url: http://kratos.public.local.com
-        cors:
-          enabled: true
+        # cors:
+        #   enabled: true
       admin:
         base_url: http://kratos.admin.local.com
 
     selfservice:
-      default_browser_return_url: http://ui.local.com
+      # default_browser_return_url: http://ui.local.com
+      default_browser_return_url: https://google.com
       allowed_return_urls:
         - http://ui.local.com
+        - https://google.com
 
       methods:
         password:
@@ -112,6 +114,9 @@ kratos:
           }
         }
       }
+
+secret:
+  enabled: false
 
 ingress:
   admin:

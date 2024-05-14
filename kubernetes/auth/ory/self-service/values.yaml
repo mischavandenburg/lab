@@ -1,5 +1,9 @@
-kratosPublicUrl: http://kratos.public.local.com/
-kratosAdminUrl: http://kratos.admin.local.com/
+# kratosPublicUrl: http://kratos.public.local.com/
+# kratosAdminUrl: http://kratos.admin.local.com/
+# kratosBrowserUrl: http://kratos.public.local.com/
+
+kratosPublicUrl: kratos-public.ory.svc.cluster.local
+kratosAdminUrl: kratos-admin.ory.svc.cluster.local
 kratosBrowserUrl: http://kratos.public.local.com/
 
 # service:
@@ -14,15 +18,20 @@ ingress:
         - path: /
           pathType: ImplementationSpecific
 
+# secret:
+#   enabled: false
+
 deployment:
   extraEnv:
-    # - name: COOKIE_SECRET
-    #   value: ab318v45
+    - name: COOKIE_SECRET
+      value: ab318v45
     - name: CSRF_COOKIE_NAME
       value: cookie_name
     - name: CSRF_COOKIE_SECRET
       value: changeme
     - name: DANGEROUSLY_DISABLE_SECURE_CSRF_COOKIES
       value: "true"
+    # - name: HYDRA_ADMIN_URL
+    #   value: http://hydra.admin.local.com
     - name: HYDRA_ADMIN_URL
-      value: http://hydra.admin.local.com
+      value: hydra-admin.ory.svc.cluster.local
