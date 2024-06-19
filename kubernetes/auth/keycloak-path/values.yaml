@@ -1,0 +1,47 @@
+resourcesPreset: none
+
+networkPolicy:
+  enabled: false
+
+ingress:
+  enabled: true
+  ingressClassName: traefik
+  hostname: dev2.sofi-platform.dk
+  path: /auth
+  pathType: Prefix
+
+adminIngress:
+  enabled: true
+  ingressClassName: traefik
+  hostname: dev2.sofi-platform.dk
+  path: /auth/admin
+  pathType: Prefix
+
+livenessProbe:
+  enabled: false
+
+readinessProbe:
+  enabled: false
+
+httpRelativePath: "/auth"
+
+extraEnvVars:
+  # - name: KC_HOSTNAME_ADMIN_URL
+  #   value: "http://dev2.sofi-platform.dk/auth"
+  - name: KC_PROXY
+    value: edge
+  - name: KC_HOSTNAME_URL
+    value: http://dev2.sofi-platform.dk/auth
+  - name: PROXY_ADDRESS_FORWARDING
+    value: "true"
+
+keycloakConfigCli:
+  enabled: true
+  configuration:
+    master.json: |
+      {
+        "realm" : "master",
+        "attributes": {
+          "frontendUrl": "http://dev2.sofi-platform.dk/auth"
+        }
+      }
